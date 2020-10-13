@@ -5,14 +5,38 @@ const CopyPlugin = require("copy-webpack-plugin");
 const MinifyPlugin = require("babel-minify-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
+const fs = require("fs");
+
+const htmlPageNames = fs.readdirSync("./src/pages");
+const multipleHTMLPlugins = htmlPageNames.map((name) => {
+  return new HtmlWebpackPlugin({
+    template: `./src/pages/${name}/${name}.html`,
+    filename: `pages/${name}.html`,
+    chunks: [`${name} `],
+  });
+});
+
+let multipleJS = {
+  main: "./src/index.ts",
+};
+
+htmlPageNames.forEach((name) => {
+  multipleJS = Object.defineProperty(multipleJS, name, {
+    value: `./src/pages/${name}/${name}.ts`,
+    writable: true,
+    enumerable: true,
+    configurable: true,
+  });
+});
+
 module.exports = {
   mode: "production",
   optimization: {
     minimizer: [new OptimizeCssAssetsWebpackPlugin()],
   },
-  entry: "./src/index.ts",
+  entry: multipleJS,
   output: {
-    filename: "main.[contentHash].js",
+    filename: "js/[name].[contentHash].js",
   },
   module: {
     rules: [
@@ -59,9 +83,10 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: "./src/index.html",
       filename: "./index.html",
+      chunks: ["main"]
     }),
     new MiniCssExtractPlugin({
-      filename: "[name].[contentHash].css",
+      filename: "css/[name].[contentHash].css",
       ignoreOrder: false,
     }),
     new CopyPlugin({
@@ -73,5 +98,5 @@ module.exports = {
       ],
     }),
     new MinifyPlugin(),
-  ],
+  ].concat(multipleHTMLPlugins),
 };

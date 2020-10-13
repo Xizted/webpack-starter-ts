@@ -3,13 +3,36 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const OptimizeCssAssetsWebpackPlugin = require("optimize-css-assets-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+const fs = require("fs");
+
+const htmlPageNames = fs.readdirSync("./src/pages");
+const multipleHTMLPlugins = htmlPageNames.map((name) => {
+  return new HtmlWebpackPlugin({
+    template: `./src/pages/${name}/${name}.html`,
+    filename: `pages/${name}.html`,
+    chunks: [`${name} `],
+  });
+});
+
+let multipleJS = {
+  main: "./src/index.ts",
+};
+
+htmlPageNames.forEach((name) => {
+  multipleJS = Object.defineProperty(multipleJS, name, {
+    value: `./src/pages/${name}/${name}.ts`,
+    writable: true,
+    enumerable: true,
+    configurable: true,
+  });
+});
 
 module.exports = {
   mode: "development",
   optimization: {
     minimizer: [new OptimizeCssAssetsWebpackPlugin()],
   },
-  entry: "./src/index.ts",
+  entry: multipleJS,
   output: {
     filename: "main.[contentHash].js",
   },
@@ -58,6 +81,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: "./src/index.html",
       filename: "./index.html",
+      chunks: ["main"],
     }),
     new MiniCssExtractPlugin({
       filename: "[name].css",
@@ -71,5 +95,5 @@ module.exports = {
         },
       ],
     }),
-  ],
+  ].concat(multipleHTMLPlugins),
 };

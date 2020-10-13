@@ -1,5 +1,5 @@
 import "./styles.css";
 
-import { createHTML } from "./ts/component";
+import { createHTML } from "./controllers/components";
 
 createHTML();
