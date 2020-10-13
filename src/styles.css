@@ -32,3 +32,15 @@ div h1 {
   text-align: center;
   font-family: sans-serif;
 }
+
+div button {
+  margin-top: 30px;
+  border: none;
+  border-radius: 5px;
+  background-color: #ffffff;
+  padding: 10px 20px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  -o-border-radius: 5px;
+}

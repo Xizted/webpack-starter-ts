@@ -1,3 +1,6 @@
 {
-    "presets": ["@babel/preset-env","minify","@babel/preset-typescript"]
-  }
+    "presets": ["@babel/preset-env","minify","@babel/preset-typescript"],
+    "plugins": [
+      ["@babel/transform-runtime"]
+  ]
+}
